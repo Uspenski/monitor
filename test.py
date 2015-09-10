@@ -35,8 +35,8 @@ class UserDict(ObjectSet):
 		self.MEM=UserCpuMem[2]
 		self.process=[]
 
-#using:
 """
+using:
 for obj in self.obj_set:
 	obj.__dict__['process'].append()
 """
@@ -149,55 +149,7 @@ class ControlRequest:
 				answ = next(self.answer_gen)
 		return answ
 
-class Request_Banc(object):
-	"""docstring for Request_Banc"""
-	def __init__(self, arg):
-		self.arg = arg
-		
-class FunctionClass:
-	"""
-	Class needed to store used functionspython 
-	"""
-	def append_to_obj_set(self, obj):
-		"""
-		append NEW UserDict(obj) to list 'self.obj_set'
-		used in: Class ProcessSnapshot.__init__() first argument of 'map'
-		existing: string separated by ';' like 'root;0;0.2'
-		"""
-		self.obj_set.append(UserDict(obj))
-	def exec_awk_request_for(self, func, position, attr, col, *param):
-		#awk = ["awk '$%s==\"%s\"'" % (col, attr)]
-		param = list(param)
-		for obj in self.obj_set:
-			request = RequestConstructor(func, *param[:position]+["awk '$%s==\"%s\"'" % (col, attr)]+param[position:])
-		"""
-			def __init__(self, func, generator, position, *param):
-				self.generator = iter(generator)
-				self.func = func
-				self.position = position
-				self.param = list(param)
-			def __iter__(self):
-				return self
-			def next(self):
-				try:
-					obj = next(self.generator)
-				except StopIteration:
-					raise StopIteration
-				else:
-					RequestConstructor.__init__(self, self.func, *self.param[:self.position]+[obj]+self.param[self.position:])
-					return self.get_request()
-		generator = ["awk '$1==\""+obj.name+"\"'" for obj in self.obj_set]
-		
-		param = list(param)
-		for obj in self.obj_set:
-			insert_param = 
-			answer = RequestConstructor(self, self.func, *self.param[:self.position]+["awk '$1==\""+obj.name+"\"'"]+self.param[self.position:])
-			attribute = getattr(obj, attr)
-
-			ps aux | awk '$1=="root"' | awk ' { print $2";"$3";"$4";"$11";"$9} ' - returns laaarge list of strings, which must be sorted!
-		"""
-
-class ProcessSnapshot(FunctionClass):
+class ProcessSnapshot:
 	"""
 	Class to control PS requests in Control_class
 	Used in: 	Control_class.__init__
@@ -207,9 +159,6 @@ class ProcessSnapshot(FunctionClass):
 	date: 		10.09.2015
 	"""
 	def __init__(self):
-		#map(self.append_to_obj_set, ControlRequest(RequestConstructor("ps aux", "grep -v USER", "awk '{suma[$1] += $3; sumb[$1] += $4}END {for(i in suma)print i \";\"suma[i]\";\"sumb[i]}'").get_request()))
-		#new append without .append_to_obj_set:
-
 		map(lambda x: self.obj_set.append(UserDict(x)), ControlRequest(str(RequestConstructor("ps aux", "grep -v USER", "awk '{suma[$1] += $3; sumb[$1] += $4}END {for(i in suma)print i \";\"suma[i]\";\"sumb[i]}'"))))
 		#append process:
 		#map(self.)
@@ -226,7 +175,7 @@ class Control_class(ProcessSnapshot):
 		ProcessSnapshot.PrintPlease(self)
 		#ProcessTop.PrintPlease(self)
 
-class TestingClass(ControlRequest, FunctionClass):
+class TestingClass(ControlRequest):
 	obj_set = []
 	def __init__(self):
 		#request 'ps aux | gre...':
