@@ -85,20 +85,37 @@ class ControlRequest:
 	"""
 	Using:
 		Needed to convert request in second argument to answers by using function in first argument
+		+ exec request and return list of answer strings
 	Exists:
 		1: function 	- functions must return generator. Type: Function, which returns generator object
 		2: req 			- must be str or iteration object (must has attribute '__iter__') Type: str or iteration object
 	Returns:
 		generator:
-			one string of request
+			- one string of request
+			+ list of strings
 	Used in: ProcessSnapshot.__init__
 	Status: finished
-	version : 1.0
-	date: 9.09.2015
+	version : 1.0.1
+	date: 10.09.2015
 	"""
-	def __init__(self, function, req):
+	def Popen_request(self, req):
+		"""
+		used in: Class ProcessSnapshot.__init__() second argument of 'map'
+		Appeal to module subprocess /bin/shell with request and return LIST OF STRINGS
+		Returns: LIST of string like: ['101:0:0.3', '104:0:0.2', '112:0:16.1', 'andy:0:4.1', ...]
+		Returns: 
+			- generator of strings from list
+			+ List of strings
+		"""
+		values = subprocess.Popen(req, shell=True, stdout=subprocess.PIPE) 
+		return values.stdout.read().rstrip().split('\n')
+		#return (str(i) for i in values.stdout.read().rstrip().split('\n'))
+	def __init__(self, req, function=''):
 		self.requests = []
-		self.function = function
+		if function: 
+			self.function = function
+		else:
+			self.function=self.Popen_request
 		if type(req) == str: 
 			self.requests.append(req)
 		else: 
@@ -119,25 +136,16 @@ class ControlRequest:
 				self.answer_gen = (i for i in self.function(now_request))
 				answ = next(self.answer_gen)
 		return answ
+
 class Request_Banc(object):
 	"""docstring for Request_Banc"""
 	def __init__(self, arg):
 		self.arg = arg
 		
-
 class FunctionClass:
 	"""
-	Class needed to store used functions
+	Class needed to store used functionspython 
 	"""
-	def Popen_request(self, req):
-		"""
-		used in: Class ProcessSnapshot.__init__() second argument of 'map'
-		Appeal to module subprocess /bin/shell with request and return LIST OF STRINGS
-		Returns: LIST of string like: ['101:0:0.3', '104:0:0.2', '112:0:16.1', 'andy:0:4.1', ...]
-		Returns: generator of strings from list
-		"""
-		values = subprocess.Popen(req, shell=True, stdout=subprocess.PIPE) 
-		return (str(i) for i in values.stdout.read().rstrip().split('\n'))
 	def append_to_obj_set(self, obj):
 		"""
 		append NEW UserDict(obj) to list 'self.obj_set'
@@ -178,8 +186,16 @@ class FunctionClass:
 		"""
 
 class ProcessSnapshot(FunctionClass):
+	"""
+	Class to control PS requests in Control_class
+	Used in: 	Control_class.__init__
+	Status: 	under constraction
+	version: 	0.1.1
+	last fix:	adding self.Popen_request method to class RequestConstructor
+	date: 		10.09.2015
+	"""
 	def __init__(self):
-		map(self.append_to_obj_set, ControlRequest(self.Popen_request, RequestConstructor("ps aux", "grep -v USER", "awk '{suma[$1] += $3; sumb[$1] += $4}END {for(i in suma)print i \";\"suma[i]\";\"sumb[i]}'").get_request()))
+		map(self.append_to_obj_set, ControlRequest(RequestConstructor("ps aux", "grep -v USER", "awk '{suma[$1] += $3; sumb[$1] += $4}END {for(i in suma)print i \";\"suma[i]\";\"sumb[i]}'").get_request()))
 		#map(self.append_process_to_obj_set, ControlRequest(self.Popen_request, ManyRequestConstructor("ps aux", ["awk '$1==\""+obj.name+"\"'" for obj in self.obj_set], 0, "awk  {print $2\";\"$3\";\"$4\";\"$11\";\"$9'")))
 	def PrintPlease(self):
 		for objects in self.obj_set:
