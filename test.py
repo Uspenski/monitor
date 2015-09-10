@@ -39,17 +39,23 @@ class UserDict(ObjectSet):
 using:
 for obj in self.obj_set:
 	obj.__dict__['process'].append()
+map(lambda x: Interface(x).Users_process(attr='root', pos=0), self.obj_set) ==[:||||:]==> Interface.__init(obj)__ + self.Users_process('root', 0)
 """
 
-class InterfaceB:
-	"""docstring for InterfaceB"""
+class Interface:
 	def __init__(self, arg):
 		self.arg = arg
+	def Users_process(self, usr='root', col=0, position):
+		params = ["awk ' { print $2\";\"$3\";\"$4\";\"$11\";\"$9} '"]
+		incepted_parametr = ["awk '$%s==\"%s\"'" % (col, self.name)]
+		request = str(RequestConstructor("ps aux", *params[:position]+incepted_parametr+params[position:]))
 		
 class RequestConstructor:
 	"""
 	Using:
 		Needed to create requests for Popen_request method
+		RequestConstructor("ps aux", "grep -v USER", "awk '{suma[$1] += $3; sumb[$1] += $4}END {for(i in suma)print i \";\"suma[i]\";\"sumb[i]}'")
+		# ... ps aux | grep -v USER | awk '{suma[$1] += $3; sumb[$1] += $4}END {for(i in suma)print i ";"suma[i]";"sumb[i]}'
 	Exists:
 		1: func  		- Name of recuest function, like 'ps', 'ls', ... Type: str
 		2: *param 		- Collection of single params. Type: str
@@ -71,27 +77,6 @@ class RequestConstructor:
 	#def get_request(self):
 	def __str__(self):
 		return self.request
-
-class ManyRequestConstructor(RequestConstructor):
-	"""
-	Class needed to get requests from script, then give them to parent RequestConstructor.__init__() and then return that back
-	"""
-	def __init__(self, func, generator, position, *param):
-		self.generator = iter(generator)
-		self.func = func
-		self.position = position
-		self.param = list(param)
-	def __iter__(self):
-		return self
-	def next(self):
-		try:
-			obj = next(self.generator)
-		except StopIteration:
-			raise StopIteration
-		else:
-			RequestConstructor.__init__(self, self.func, *self.param[:self.position]+[obj]+self.param[self.position:])
-			return self.get_request()
-
 
 class ControlRequest:
 	"""
