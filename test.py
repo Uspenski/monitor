@@ -35,6 +35,17 @@ class UserDict(ObjectSet):
 		self.MEM=UserCpuMem[2]
 		self.process=[]
 
+#using:
+"""
+for obj in self.obj_set:
+	obj.__dict__['process'].append()
+"""
+
+class InterfaceB:
+	"""docstring for InterfaceB"""
+	def __init__(self, arg):
+		self.arg = arg
+		
 class RequestConstructor:
 	"""
 	Using:
@@ -57,7 +68,8 @@ class RequestConstructor:
 		self.request = func
 		for req_param in self.parametrs:
 			self.request += ' | '+req_param
-	def get_request(self):
+	#def get_request(self):
+	def __str__(self):
 		return self.request
 
 class ManyRequestConstructor(RequestConstructor):
@@ -190,12 +202,17 @@ class ProcessSnapshot(FunctionClass):
 	Class to control PS requests in Control_class
 	Used in: 	Control_class.__init__
 	Status: 	under constraction
-	version: 	0.1.1
+	version: 	0.1.2
 	last fix:	adding self.Popen_request method to class RequestConstructor
 	date: 		10.09.2015
 	"""
 	def __init__(self):
-		map(self.append_to_obj_set, ControlRequest(RequestConstructor("ps aux", "grep -v USER", "awk '{suma[$1] += $3; sumb[$1] += $4}END {for(i in suma)print i \";\"suma[i]\";\"sumb[i]}'").get_request()))
+		#map(self.append_to_obj_set, ControlRequest(RequestConstructor("ps aux", "grep -v USER", "awk '{suma[$1] += $3; sumb[$1] += $4}END {for(i in suma)print i \";\"suma[i]\";\"sumb[i]}'").get_request()))
+		#new append without .append_to_obj_set:
+
+		map(lambda x: self.obj_set.append(UserDict(x)), ControlRequest(str(RequestConstructor("ps aux", "grep -v USER", "awk '{suma[$1] += $3; sumb[$1] += $4}END {for(i in suma)print i \";\"suma[i]\";\"sumb[i]}'"))))
+		#append process:
+		#map(self.)
 		#map(self.append_process_to_obj_set, ControlRequest(self.Popen_request, ManyRequestConstructor("ps aux", ["awk '$1==\""+obj.name+"\"'" for obj in self.obj_set], 0, "awk  {print $2\";\"$3\";\"$4\";\"$11\";\"$9'")))
 	def PrintPlease(self):
 		for objects in self.obj_set:
