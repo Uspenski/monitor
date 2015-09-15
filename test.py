@@ -29,7 +29,6 @@ class Interface:
 		map(lambda x: self.obj.process.append(x), filter(lambda x: x not in self.obj.process, sorted(answ_gen, key=sortByMEM, reverse=True)[:5]))
 		
 class RequestConstructor:
-	request = ""
 	def __init__(self, func, *param):
 		self.parametrs=list(param)
 		self.request = func
