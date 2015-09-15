@@ -14,15 +14,12 @@ class ObjectSet:
 	Base object methods
 	"""
 	def __str__(self):
-		answer_storage = []
-		listing = ''
-		answer_storage.append("name: '%s', CPU: %s, MEM: %s \n" % (self.name, self.CPU, self.MEM))
-		map(lambda x: answer_storage.append("PID: %s, CPU: %s, MEM: %s, COMMAND: %s, TIME: %s \n" % tuple(x.split(";"))), self.process)
-		for i in answer_storage:
-			listing+=i
-		return listing
-		#return ("name: '%s', CPU: %s, MEM: %s PROC: %s" % (self.name, self.CPU, self.MEM, self.process[0]))
-		#return ("name: '%s', CPU: %s, MEM: %s" % (self.name, self.CPU, self.MEM))
+		"""
+		version: 0.2
+		date: 15.09.2015
+		Status: finished
+		"""
+		return reduce(lambda res, x: res+x, map(lambda x: "PID: %s, CPU: %s, MEM: %s, COMMAND: %s, TIME: %s \n" % tuple(x.split(";")), self.process), "name: '%s', CPU: %s, MEM: %s \n" % (self.name, self.CPU, self.MEM))
 
 class UserDict(ObjectSet):
 	"""
@@ -56,13 +53,16 @@ map(lambda x: Interface(x).Users_process(), self.obj_set) ==[:||||:]==> Interfac
 """
 
 class Interface:
+	"""
+	Using: Needed to process obj_set
+	version: 0.1
+	date: 15.09.2015
+	Status: finished
+	"""
 	def __init__(self, obj):
 		self.obj = obj
 	def Users_process(self, position=0, col=1):
-		params = ["awk ' { print $2\";\"$3\";\"$4\";\"$11\";\"$9} '"]
-		incepted_parametr = ["awk '$%s==\"%s\"'" % (col, self.obj.name)]
-		request = str(RequestConstructor("ps aux", *params[:position]+incepted_parametr+params[position:]))
-		answ_gen = list(ControlRequest(request))
+		answ_gen = list(ControlRequest(str(RequestConstructor("ps aux", *["awk '$%s==\"%s\"'" % (col, self.obj.name)]+["awk ' { print $2\";\"$3\";\"$4\";\"$11\";\"$9} '"]))))
 		self.obj.process+=sorted(answ_gen, key=sortByCPU, reverse=True)[:5]
 		map(lambda x: self.obj.process.append(x), filter(lambda x: x not in self.obj.process, sorted(answ_gen, key=sortByMEM, reverse=True)[:5]))
 		
@@ -90,7 +90,6 @@ class RequestConstructor:
 		self.request = func
 		for req_param in self.parametrs:
 			self.request += ' | '+req_param
-	#def get_request(self):
 	def __str__(self):
 		return self.request
 
@@ -169,39 +168,11 @@ class ProcessSnapshot:
 class Control_class(ProcessSnapshot):
 	obj_set = []
 	def __init__(self):
-		pass
 		ProcessSnapshot.__init__(self)
 		ProcessSnapshot.PrintPlease(self)
-		#ProcessTop.PrintPlease(self)
-
-class TestingClass(ControlRequest):
-	obj_set = []
-	def __init__(self):
-		#request 'ps aux | gre...':
-		"""
-		#test 0.1:
-		request = RequestConstructor("ps aux", "grep -v USER", "awk '{suma[$1] += $3; sumb[$1] += $4}END {for(i in suma)print i \":\"suma[i]\":\"sumb[i]}'").get_request()
-		result = self.Popen_request(request)
-		#self.append_to_obj_set(UserDict(result))
-		iterat = ControlRequest(self.Popen_request, "fuuuuuck")
-		for i in iterat:
-			print i
-		"""
-		#test 0.2:
-		#self.obj_set.append(UserDict("1;00;0.2"))
-		#self.obj_set.append(UserDict("2;10;0.2"))
-		#self.obj_set.append(UserDict("3;20;0.2"))
-		#request = ManyRequestConstructor("ps aux", ("awk '$1==\""+obj.name+"\"'" for obj in self.obj_set), 0, "awk  {print $2\";\"$3\";\"$4\";\"$11\";\"$9'")
-		a = ControlRequest(self.Popen_request, RequestConstructor("ps aux", "grep -v USER", "awk '{suma[$1] += $3; sumb[$1] += $4}END {for(i in suma)print i \";\"suma[i]\";\"sumb[i]}'").get_request())
-		for i in a:
-			print i
-		#a = request[0]
-		#print len(request)
-
 
 def main_func():
 	Control_class()
-	#TestingClass()
 
 if __name__ == '__main__':
 	main_func()
