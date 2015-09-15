@@ -3,13 +3,26 @@
 import time, MySQLdb, subprocess
 from datetime import datetime
 
+def sortByCPU(inputstr):
+	return inputstr.rstrip().split(';')[2]
+
+def sortByMEM(inputstr):
+	return inputstr.rstrip().split(';')[3]
+
 class ObjectSet:
 	"""
 	Base object methods
 	"""
 	def __str__(self):
+		answer_storage = []
+		listing = ''
+		answer_storage.append("name: '%s', CPU: %s, MEM: %s \n" % (self.name, self.CPU, self.MEM))
+		map(lambda x: answer_storage.append("PID: %s, CPU: %s, MEM: %s, COMMAND: %s, TIME: %s \n" % tuple(x.split(";"))), self.process)
+		for i in answer_storage:
+			listing+=i
+		return listing
 		#return ("name: '%s', CPU: %s, MEM: %s PROC: %s" % (self.name, self.CPU, self.MEM, self.process[0]))
-		return ("name: '%s', CPU: %s, MEM: %s" % (self.name, self.CPU, self.MEM))
+		#return ("name: '%s', CPU: %s, MEM: %s" % (self.name, self.CPU, self.MEM))
 
 class UserDict(ObjectSet):
 	"""
@@ -39,16 +52,19 @@ class UserDict(ObjectSet):
 using:
 for obj in self.obj_set:
 	obj.__dict__['process'].append()
-map(lambda x: Interface(x).Users_process(attr='root', pos=0), self.obj_set) ==[:||||:]==> Interface.__init(obj)__ + self.Users_process('root', 0)
+map(lambda x: Interface(x).Users_process(), self.obj_set) ==[:||||:]==> Interface.__init(obj)__ + self.Users_process('root', 0)
 """
 
 class Interface:
-	def __init__(self, arg):
-		self.arg = arg
-	def Users_process(self, usr='root', col=0, position):
+	def __init__(self, obj):
+		self.obj = obj
+	def Users_process(self, position=0, col=1):
 		params = ["awk ' { print $2\";\"$3\";\"$4\";\"$11\";\"$9} '"]
-		incepted_parametr = ["awk '$%s==\"%s\"'" % (col, self.name)]
+		incepted_parametr = ["awk '$%s==\"%s\"'" % (col, self.obj.name)]
 		request = str(RequestConstructor("ps aux", *params[:position]+incepted_parametr+params[position:]))
+		answ_gen = list(ControlRequest(request))
+		self.obj.process+=sorted(answ_gen, key=sortByCPU, reverse=True)[:5]
+		map(lambda x: self.obj.process.append(x), filter(lambda x: x not in self.obj.process, sorted(answ_gen, key=sortByMEM, reverse=True)[:5]))
 		
 class RequestConstructor:
 	"""
@@ -145,9 +161,7 @@ class ProcessSnapshot:
 	"""
 	def __init__(self):
 		map(lambda x: self.obj_set.append(UserDict(x)), ControlRequest(str(RequestConstructor("ps aux", "grep -v USER", "awk '{suma[$1] += $3; sumb[$1] += $4}END {for(i in suma)print i \";\"suma[i]\";\"sumb[i]}'"))))
-		#append process:
-		#map(self.)
-		#map(self.append_process_to_obj_set, ControlRequest(self.Popen_request, ManyRequestConstructor("ps aux", ["awk '$1==\""+obj.name+"\"'" for obj in self.obj_set], 0, "awk  {print $2\";\"$3\";\"$4\";\"$11\";\"$9'")))
+		map(lambda x: Interface(x).Users_process(), self.obj_set)
 	def PrintPlease(self):
 		for objects in self.obj_set:
 			print objects
