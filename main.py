@@ -5,20 +5,25 @@ from datetime import datetime
 from objected import UserDict
 from interfaced import Interface
 from requested import RequestConstructor, ControlRequest
+from daemon import Daemon
 
 import PSModule
 
-class Go:
+class GoControl:
 	def __init__(self):
-		self.obj_set = []
-
-class GoControl(GoModel):
-	def __init__(self):
+		self.model = GoModel()
+		self.view = GoView()
+	def go(self):
 		pass
 		
 class GoModel:
 	def __init__(self):
 		pass
-		
+
+class GoView:
+	def __init__(self):
+		pass
+
 if __name__ == '__main__':
-	go()
+	Controller = GoControl()
+	Controller.go()
