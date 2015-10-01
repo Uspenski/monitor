@@ -1,5 +1,6 @@
 #!/usr/bin/env python
 from requested import RequestConstructor, ControlRequest
+from abc import ABCMeta, abstractmethod
 
 def sortByCPU(inputstr):
 	return inputstr.rstrip().split(';')[2]
@@ -12,6 +13,10 @@ class ObjectSet:
 	---Observer---
 	Base object methods
 	"""
+	__metaclass__ = ABCMeta
+	@abstractmethod
+	def modelIsChanged(self):
+		pass
 	def __str__(self):
 		"""
 		version: 0.2
@@ -48,7 +53,7 @@ class UserDict(ObjectSet):
 		self.CPU=UserCpuMem[1]
 		self.MEM=UserCpuMem[2]
 		self.process=[]
-	def Users_process(self):
+	def modelIsChanged(self):
 		ObjectSet.Users_process(self, position=0, col=1)
 
 if __name__ == '__main__':

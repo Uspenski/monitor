@@ -57,7 +57,6 @@ class ControlRequest:
 		"""
 		values = subprocess.Popen(req, shell=True, stdout=subprocess.PIPE) 
 		return values.stdout.read().rstrip().split('\n')
-		#return (str(i) for i in values.stdout.read().rstrip().split('\n'))
 	def __init__(self, req, function=''):
 		self.requests = []
 		if function: 
