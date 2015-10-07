@@ -74,6 +74,9 @@ class PSView:
 	def __init__(self, inController, inModel):
 		self.model = inModel
 		self.controller = inController
+		self.model.appendObservers( self )
+	def modelIsChanged(self):
+		pass
 
 class Users_process(ControlRequest):
 	"""Users_process"""
@@ -92,12 +95,13 @@ class PSModel:
 	def __init__(self):
 		self._mObservers = []
 	def appendObservers(self, inObserver):
-		self._mObservers.append(UserDict(inObserver))
+		self._mObservers.append(inObserver)
 	def notifyObservers(self):
-		self._mObservers = []
-		map(self.appendObservers, ControlRequest())
 		for x in self._mObservers:
 			x.modelIsChanged()
+		#map(self.appendObservers, ControlRequest())
+		#for x in self._mObservers:
+		#	x.modelIsChanged()
 
 class PSControl:
 	def __init__(self):
@@ -105,4 +109,4 @@ class PSControl:
 		self.view=PSView(self, self.model)
 
 if __name__ == '__main__':
-	a=PSControl
+	a=PSControl()
