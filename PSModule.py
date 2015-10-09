@@ -84,15 +84,16 @@ class Users_process(ControlRequest):
 	def __init__(self):
 		pass
 
-class Users_in_system(ControlRequest):
+class Users_in_system(Users_process):
 	"""Users_in_system"""
 	request = list("ps aux", "grep -v USER", "awk '{suma[$1] += $3; sumb[$1] += $4}END {for(i in suma)print i \";\"suma[i]\";\"sumb[i]}'")
 	def __init__(self):
 		pass		
 	
-class PSModel:
+class PSModel(Users_in_system):
 	""""""
 	def __init__(self):
+		self.obj_set=[]
 		self._mObservers = []
 	def appendObservers(self, inObserver):
 		self._mObservers.append(inObserver)
